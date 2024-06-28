@@ -1,0 +1,134 @@
+import numpy as np
+import math
+import random
+from inspect import signature
+
+def formatToMatrix(array):
+    assert len(array) == 25
+    matrix = np.zeros((5, 5))
+    for i in range(5):
+        for j in range(5):
+            matrix[i][j] = array[i*5 + j]
+    return matrix
+
+
+def arrayFromFunc(func, additional_param = 0):
+    array = []
+    nofParams = len(signature(func).parameters)
+    if nofParams == 1:
+        for i in range(25):
+            array.append(func.__call__(i))
+    elif nofParams == 2:
+        for i in range(25):
+            array.append(func.__call__(i, additional_param))
+    return array
+
+
+def z(index):
+    Z = np.array([0.0, 0.0, 0.0, 0.0, 0.0,
+                  0.0, 1.0, 1.0, 0.0, 0.0,
+                  0.0, 0.0, 1.0, 0.0, 0.0,
+                  0.0, 0.0, 1.0, 0.0, 0.0,
+                  0.0, 0.0, 1.0, 0.0, 0.0,])
+    return Z[index]
+
+
+def c(i, j):
+    if i != j:
+        return (z(i) - 1/2) * (z(j) - 1/2)
+    else:
+        return 0
+
+
+def theta(i):
+    sum = 0
+    for j in range(25):
+        sum = sum + c(i, j)
+    return sum
+
+
+def w(i, j):
+    return 2 * c(i, j)
+
+
+X = []
+X_0 = []
+for i in range(25):
+    X_0.append(random.randint(0, 1))
+X.append(X_0)
+
+
+def x(t):
+    array = []
+    for i in range(25):
+        U = u(i, t-1)
+        elem = None
+        if U < 0:
+            elem = 0
+        if U == 0:
+            elem = X[t-1][i]
+        if U > 0:
+            elem = 1
+        array.append(elem)
+    X.append(array)
+    # print(formatToMatrix(X[t]))
+
+
+def u(i, t):
+    sum = 0
+    for j in range(25):
+        sum = sum + w(i, j) * X[t][j]
+    return sum - theta(i)
+
+
+def is_similar_to_z(x: list):
+    default_z = arrayFromFunc(z)
+    negative_z = []
+    for i in range(25):
+        if default_z[i] == 0.0:
+            negative_z.append(1.0)
+        if default_z[i] == 1.0:
+            negative_z.append(0.0)
+
+    flag_similar_defailt = True
+    flag_similar_negative = True
+
+    for i in range(25):
+        if x[i] != default_z[i]:
+            flag_similar_defailt = False
+            break
+
+    for i in range(25):
+        if x[i] != negative_z[i]:
+            flag_similar_negative = False
+            break
+
+    if flag_similar_defailt or flag_similar_negative:
+        return True
+    else:
+        return False
+
+def paint(matrix):
+    answer = np.chararray((5, 5), unicode='utf-8')
+
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == 1:
+                answer[i][j] = '\u25A0'
+            else:
+                answer[i][j] = '\u25A1'
+    print(answer)
+
+
+def generate_X(t):
+    print(t)
+    paint(formatToMatrix(X[t]))
+    if is_similar_to_z(X[t]):
+        print("\nIs equal to z!\n")
+        paint(formatToMatrix(X[t]))
+    else:
+        x(t+1)
+        generate_X(t+1)
+
+
+generate_X(0)

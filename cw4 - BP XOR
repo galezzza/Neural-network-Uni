@@ -1,0 +1,107 @@
+import math
+
+c = 0.1
+eps = 0.0001
+betta = 2.0
+
+w = [
+    [0.0, 1.0, 2.0],
+    [0.0, 1.0, 2.0],
+]
+s = [0.0, -1.0, 2.0]
+
+u = [
+    [0, 0, 1],
+    [1, 0, 1],
+    [0, 1, 1],
+    [1, 1, 1],
+]
+
+z = [0, 1, 1, 0]
+
+w_old = w
+s_old = s
+
+
+def f(x):
+    try:
+        return 1 / (1 + math.exp(-1 * betta * x))
+    except OverflowError as e:
+        print(f"error for x={x}")
+
+
+def f_prim(x):
+    return betta * f(x) * (1 - f(x))
+
+
+def calc_x(p, i):
+    if i == 2:
+        return 1.0
+
+    return f(sum(w_old[i][j] * u[p][j] for j in range(3)))
+
+
+def calc_y(p):
+    return f(sum(s_old[i] * calc_x(p, i) for i in range(3)))
+
+
+def dE_ds(i):
+    return sum(
+        (calc_y(p) - z[p])
+        * f_prim(sum(s_old[k] * calc_x(p, k) for k in range(3)))
+        * calc_x(p, i)
+        for p in range(4))
+
+
+def dE_dw(i, j):
+    return sum(
+        (calc_y(p) - z[p])
+        * f_prim(sum(s_old[k] * calc_x(p, k) for k in range(3)))
+        * s_old[i]
+        * f_prim(sum(w_old[i][l] * u[p][l] for l in range(3)))
+        * u[p][j]
+        for p in range(4))
+
+
+# ---------------------------------
+
+s_new = [s_old[i] - c * dE_ds(i)
+         for i in range(3)]
+
+w_new = [[w_old[i][j] - c * dE_dw(i, j)
+         for j in range(3)]
+         for i in range(2)]
+
+
+def delta_s():
+    return [abs(s_new[i] - s_old[i]) for i in range(3)]
+
+
+def delta_w():
+    return [abs(w_new[i][j] - w_old[i][j])
+            for i in range(2)
+            for j in range(3)]
+
+step = 1
+while max(max(delta_s()), max(delta_w())) > eps:
+    s_old = s_new
+    w_old = w_new
+
+    s_new = [s_old[i] - c * dE_ds(i)
+             for i in range(3)]
+
+    w_new = [[w_old[i][j] - c * dE_dw(i, j)
+              for j in range(3)]
+             for i in range(2)]
+
+    print(f"step = {step}")
+    print(f"y = {[calc_y(p) for p in range(4)]}")
+    print(f"s = {s_old}")
+    print(f"w = {w_old}")
+    step += 1
+
+# -----------------------------
+print("-----------------RESULT---------------")
+print(f"y = {[calc_y(p) for p in range(4)]}")
+print(f"s = {s_old}")
+print(f"w = {w_old}")

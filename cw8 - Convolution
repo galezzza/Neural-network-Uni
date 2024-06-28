@@ -1,0 +1,130 @@
+import numpy as np
+
+u1= np.array([
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 1.0, 1.0, 0.0],
+    [0.0, 1.0, 0.0, 1.0, 0.0],
+    [0.0, 1.0, 1.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+])
+u2 = np.array([
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+    [1.0, 1.0, 1.0, 0.0, 0.0],
+    [1.0, 0.0, 1.0, 0.0, 0.0],
+    [1.0, 1.0, 1.0, 0.0, 0.0],
+])
+u3 = np.array([
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 1.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0, 0.0],
+])
+u4 = np.array([
+    [0.0, 0.0, 1.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+])
+u5 = np.array([
+    [0.0, 0.0, 0.0, 0.0, 0.0],
+    [1.0, 1.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0, 0.0],
+])
+w1 = np.array([
+    [1.0, 1.0, 1.0],
+    [1.0, 0.0, 0.0],
+    [1.0, 0.0, 0.0],
+])
+w2 = np.array([
+    [0.0, 0.0, 1.0],
+    [0.0, 0.0, 1.0],
+    [1.0, 1.0, 1.0],
+])
+w3 = np.array([
+    [1.0, 1.0, 1.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 1.0, 0.0],
+])
+w4 = np.array([
+    [0.0, 1.0, 1.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 1.0, 0.0],
+])
+
+theta = 2.5
+
+def f(x):
+    if x >= 0:
+        return 1
+    else:
+        return 0
+
+def x(i, j, u, w):
+    sum_i_prim = 0
+    sum_j_prim = 0
+    for i_prim in range(-1, 2):
+        for j_prim in range(-1, 2):
+            w_nu = w[i_prim+1][j_prim+1]
+            try:
+                index_i = i + i_prim
+                index_j = j + j_prim
+                if index_i <0 or index_j<0:
+                    u_nu = 0
+                else:
+                    u_nu = u[i + i_prim][j + j_prim]
+            except:
+                u_nu = 0
+            sum_j_prim += w_nu * u_nu
+            # print(sum_j_prim)
+        sum_i_prim = sum_j_prim
+    return f(sum_i_prim - theta)
+
+#
+# _
+
+def paint(u, w):
+    answer = np.chararray((5, 5), unicode='utf-8')
+    for i in range(5):
+        for j in range(5):
+            if x(i, j, u, w) == 1:
+                answer[i][j] = '\u25A0'
+            else:
+                answer[i][j] = '\u25A1'
+    print(answer)
+    print()
+
+print(x(0, 1, u2, w1))
+
+print('\nw1\n')
+paint(u1, w1)
+paint(u2, w1)
+paint(u3, w1)
+paint(u4, w1)
+paint(u5, w1)
+
+print('\nw2\n')
+paint(u1, w2)
+paint(u2, w2)
+paint(u3, w2)
+paint(u4, w2)
+paint(u5, w2)
+
+print('\nw3\n')
+paint(u1, w3)
+paint(u2, w3)
+paint(u3, w3)
+paint(u4, w3)
+paint(u5, w3)
+
+print('\nw4\n')
+paint(u1, w4)
+paint(u2, w4)
+paint(u3, w4)
+paint(u4, w4)
+paint(u5, w4)
+

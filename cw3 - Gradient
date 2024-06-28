@@ -1,0 +1,66 @@
+import numpy as np
+
+
+def DF1x1(x1, x2, x3):
+    return 4 * x1 - 2 * x2 - 2
+
+
+def DF1x2(x1, x2, x3):
+    return 4 * x2 - 2 * x1 - 2 * x3
+
+
+def DF1x3(x1, x2, x3):
+    return 2 * x3 - 2 * x2
+
+
+def DF2x1(x1, x2):
+    return 12 * x1 ** 3 + 12 * x1 ** 2 - 24 * x1
+
+
+def DF2x2(x1, x2):
+    return 24 * x2 - 24
+
+
+def F1(x1, x2, x3):
+    return 2 * x1 ** 2 + 2 * x2 ** 2 + x3 ** 2 - 2 * x1 * x2 - 2 * x2 * x3 - 2 * x1 + 3
+
+
+def F2(x1, x2):
+    return 3 * x1 ** 4 + 4 * x1 ** 3 - 12 * x1 ** 2 + 12 * x2 ** 2 - 24 * x2
+
+
+c = 0.01
+e = 0.00001
+
+
+######################################################################
+##############################FUNCTION 1##############################
+######################################################################
+xOld = [-9, 9, 9]
+xNew = [0, 0, 0]
+
+error = [1000, 1000, 1000]
+while max(np.absolute(error)) > e:
+    xNew[0] = xOld[0] - c * DF1x1(xOld[0], xOld[1], xOld[2])
+    xNew[1] = xOld[1] - c * DF1x2(xOld[0], xOld[1], xOld[2])
+    xNew[2] = xOld[2] - c * DF1x3(xOld[0], xOld[1], xOld[2])
+    for i in range(3):
+        error[i] = xNew[i] - xOld[i]
+        xOld[i] = xNew[i]
+print(xNew, F1(xNew[0], xNew[1], xNew[2]))
+
+######################################################################
+##############################FUNCTION 2##############################
+######################################################################
+xOld = [1, 1]
+xNew = [0, 0]
+
+error = [1000, 1000]
+while max(np.absolute(error)) > e:
+    xNew[0] = xOld[0] - c * DF2x1(xOld[0], xOld[1])
+    xNew[1] = xOld[1] - c * DF2x2(xOld[0], xOld[1])
+    for i in range(2):
+        error[i] = xNew[i] - xOld[i]
+        xOld[i] = xNew[i]
+print(xNew, F2(xNew[0], xNew[1]))
+

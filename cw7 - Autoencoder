@@ -1,0 +1,78 @@
+import math
+import numpy as np
+beta = 2.5
+
+u = np.array([[1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0],
+              [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0]])
+
+w = np.array([[20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -10.0],
+            [0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -10.0]])
+
+
+def x(i, p):
+    if i == 2:
+        return 1
+    else:
+        sum = 0
+        for j in range(10):
+            sum += w[i][j] * u[p][j]
+        return f(sum)
+
+def s(j, i):
+    if i == 2:
+        return -10
+    else:
+        return 20 * u[i][j]
+
+
+def f(x):
+    return 1/ (1 + math.exp(-beta * x))
+
+def y(j, p):
+    sum = 0
+    for i in range(3):
+        sum += s(j, i) * x(i, p)
+    return f(sum)
+
+for p in range(2):
+    print()
+    for i in range(3):
+        print(x(i, p))
+
+for p in range(2):
+    print()
+    for i in range(9):
+        print(y(i, p))
+
+
+# zadanie 2
+print('\nzadanie 2\n')
+
+
+def Df(x):
+    return (beta * math.exp(-beta * x))/((1 + math.exp(-beta * x))**2)
+
+
+def DE_s(j, i):
+    sum = 0
+    for p in range(2):
+        ksum = 0
+        for k in range(3):
+            ksum += s(j, k) * x(k, p)
+        sum += (y(j, p) - u[p][j]) * Df(ksum) * x(i, p)
+    return sum
+
+
+def DE_w(i, j):
+    psum = 0
+    for p in range(2):
+        tsum = 0
+        for t in range(9):
+            ksum =0
+            for k in range(3):
+                ksum += s(t, k) * x(k, p)
+            lsum =0
+            for l in range(10):
+                lsum += w[i][l] * u[p][l]
+            tsum += (y(t, p) - u[p][t]) * Df(ksum) * s(t, i) * Df(lsum) * u[p][j]
+        psum += tsum

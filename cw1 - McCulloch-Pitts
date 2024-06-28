@@ -1,0 +1,76 @@
+import numpy as np
+
+
+def f(x):
+    if x >= 0:
+        return 1
+    else:
+        return 0
+
+
+def y_func(w, u):
+    return np.dot(w, u)
+
+
+def check(w, u: list, y: list):
+
+    for i in range(len(u)):
+        result = f(y_func(w, u[i]))
+        if result == y[i]:
+            print(True)
+        else:
+            print(False)
+
+
+def NOT():
+    u = [[0, 1], [1, 1]]
+    y = [1, 0]
+    return u, y
+
+
+def AND():
+    u = [[0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]]
+    y = [0, 0, 0, 1]
+    return u, y
+
+
+def NAND():
+    u = [[0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]]
+    y = [1, 1, 1, 0]
+    return u, y
+
+
+def OR():
+    u = [[0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]]
+    y = [0, 1, 1, 1]
+    return u, y
+
+
+print("//////////////////")
+print("///////NOT////////")
+print("//////////////////")
+w_not = [-2, 1]
+U_not, Y_not = NOT()
+check(w_not, U_not, Y_not)
+
+print("//////////////////")
+print("///////AND////////")
+print("//////////////////")
+w_and = [0.25, 0.25, -0.26]
+U_and, Y_and = AND()
+check(w_and, U_and, Y_and)
+
+print("//////////////////")
+print("///////NAND////////")
+print("//////////////////")
+w_nand = [-0.25, -0.25, 0.26]
+U_nand, Y_nand = NAND()
+check(w_nand, U_nand, Y_nand)
+
+print("//////////////////")
+print("////////OR/////////")
+print("//////////////////")
+w_or = [2, 2, -1]
+U_or, Y_or = OR()
+check(w_or, U_or, Y_or)
+
